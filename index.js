@@ -9,21 +9,20 @@ app.use(express.json());
 app.post("/make-api-call", async (req, res) => {
   try {
     const requestData = req.body;
-    console.log("----------", requestData);
+    console.log("Request Body:", requestData);
 
     const headers = {
-      Host: "delayed-service-1-svc.default.svc.cluster.local",
+      Host: requestData.host,
     };
 
-    const response = await axios.get(
-      "http://delayed-service-1-svc.default.svc.cluster.local/sleep/5",
-      { headers }
-    );
-    console.log("----------", response.data);
+    const url = "http://" + requestData.host + "/sleep/" + requestData.period;
+    console.log(url);
+    const response = await axios.get(url, { headers });
+    console.log("Response Data:", response.data);
     res.json(response.data);
   } catch (error) {
     console.error("Error making API call:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error:" + error.message });
   }
 });
 
